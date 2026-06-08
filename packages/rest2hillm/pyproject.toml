@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rest2hillm"
+version = "0.1.0"
+description = "REST adapter for dsl2hillm"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = ["dsl2hillm>=0.1.0", "fastapi>=0.115", "uvicorn[standard]>=0.30"]
+
+[project.optional-dependencies]
+dev = ["httpx>=0.27", "pytest>=8.0"]
+
+[project.scripts]
+rest2hillm = "rest2hillm.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv.sources]
+dsl2hillm = { workspace = true }

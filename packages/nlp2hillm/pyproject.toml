@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nlp2hillm"
+version = "0.1.0"
+description = "Natural language to dsl2hillm adapter"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = ["dsl2hillm>=0.1.0", "hillm>=0.1.0"]
+
+[project.scripts]
+nlp2hillm = "nlp2hillm.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv.sources]
+hillm = { workspace = true }
+dsl2hillm = { workspace = true }

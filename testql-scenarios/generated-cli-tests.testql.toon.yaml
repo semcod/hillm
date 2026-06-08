@@ -1,0 +1,14 @@
+# SCENARIO: CLI Command Tests
+# TYPE: cli
+# GENERATED: true
+
+CONFIG[2]{key, value}:
+  cli_command, python -m hillm
+  timeout_ms, 10000
+
+SHELL "python -m hillm --help" 5000
+ASSERT_EXIT_CODE 0
+ASSERT_STDOUT_CONTAINS "usage"
+
+SHELL "python -m hillm devices --format json" 5000
+ASSERT_EXIT_CODE 0

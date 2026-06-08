@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp2hillm"
+version = "0.1.0"
+description = "MCP server adapter for dsl2hillm"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = ["dsl2hillm>=0.1.0", "nlp2hillm>=0.1.0", "mcp>=1.0"]
+
+[project.scripts]
+mcp2hillm = "mcp2hillm.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv.sources]
+dsl2hillm = { workspace = true }
+nlp2hillm = { workspace = true }

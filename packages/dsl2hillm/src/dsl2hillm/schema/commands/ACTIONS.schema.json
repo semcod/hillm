@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "verb"
+  ],
+  "properties": {
+    "verb": {
+      "type": "string",
+      "const": "ACTIONS"
+    },
+    "device": {
+      "type": "string"
+    },
+    "register": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "value": {},
+    "action": {
+      "type": "string"
+    },
+    "dry_run": {
+      "type": "boolean"
+    },
+    "category": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

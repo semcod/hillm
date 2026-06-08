@@ -1,4 +1,17 @@
 # Byte-compiled / optimized / DLL files
+.env.example
+.idea/cli2hillm.iml
+.idea/dsl2hillm.iml
+.idea/hillm.iml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/mcp2hillm.iml
+.idea/modules.xml
+.idea/nlp2hillm.iml
+.idea/pyProjectModel.xml
+.idea/rest2hillm.iml
+.idea/uri2hillm.iml
+.idea/vcs.xml
 __pycache__/
 *.py[codz]
 *$py.class
