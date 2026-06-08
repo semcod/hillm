@@ -35,6 +35,25 @@ DeviceTransport = Literal[
 ]
 WhichFn = Callable[[str], str | None]
 
+_SERIAL_PORT_CANDIDATES: tuple[str, ...] = (
+    "/dev/ttyACM0",
+    "/dev/ttyUSB0",
+    "/dev/ttyUSB1",
+    "/dev/ttyS0",
+)
+
+
+def first_existing_serial_path(*candidates: str) -> str:
+    """Return the first existing serial device path, or empty string."""
+    seen: set[str] = set()
+    for path in candidates:
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        if os.path.exists(path):
+            return path
+    return ""
+
 
 @dataclass(frozen=True)
 class DeviceSpec:
@@ -55,7 +74,11 @@ class DeviceSpec:
         if override and override.strip():
             return override.strip()
         env_key = f"HILLM_{self.id.upper().replace('-', '_')}_ADDRESS"
-        return os.environ.get(env_key, self.address).strip()
+        configured = os.environ.get(env_key, self.address).strip()
+        if self.transport != "serial" or not configured or os.path.exists(configured):
+            return configured
+        fallback = first_existing_serial_path(configured, *self.detect_paths, *_SERIAL_PORT_CANDIDATES)
+        return fallback or configured
 
     def missing_env_vars(self, environ: dict[str, str] | None = None) -> tuple[str, ...]:
         env = environ if environ is not None else os.environ
@@ -102,6 +125,7 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         capabilities=("status", "brightness", "mode"),
         detect_commands=("xrandr", "wlr-randr"),
         notes="X11/Wayland display control via xrandr or wlr-randr.",
+        aliases=("display",),
     ),
     DeviceSpec(
         id="hdmi-out",
@@ -111,6 +135,7 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         address="HDMI-1",
         capabilities=("status", "mode", "power"),
         detect_commands=("xrandr",),
+        aliases=("hdmi",),
     ),
     # Cameras
     DeviceSpec(
@@ -121,7 +146,7 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         address="/dev/video0",
         capabilities=("capture", "status"),
         detect_paths=("/dev/video0",),
-        aliases=("webcam",),
+        aliases=("webcam", "camera"),
     ),
     # Audio
     DeviceSpec(
@@ -169,6 +194,7 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         transport="usb",
         capabilities=("list", "status"),
         detect_commands=("lsusb",),
+        aliases=("usb",),
     ),
     # Serial / RS232 / RS485
     DeviceSpec(
@@ -228,7 +254,9 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         transport="serial",
         address="/dev/ttyUSB0",
         capabilities=("read", "status"),
+        detect_paths=("/dev/ttyACM0", "/dev/ttyUSB0"),
         default_register="temperature",
+        aliases=("temp", "temperature"),
     ),
     DeviceSpec(
         id="actuator-relay",
@@ -238,6 +266,7 @@ _DEVICE_SPECS: tuple[DeviceSpec, ...] = (
         address="127.0.0.1:502",
         capabilities=("write", "actuate"),
         default_register="coil:0",
+        aliases=("relay",),
     ),
     # Network devices
     DeviceSpec(
@@ -283,6 +312,25 @@ def get_device_spec(device_id: str) -> DeviceSpec | None:
         if spec.id == nid:
             return spec
     return None
+
+
+def suggest_device_ids(raw: str, *, limit: int = 5) -> list[str]:
+    key = raw.strip().lower().replace(" ", "-")
+    if not key:
+        return []
+    matches: list[str] = []
+    for spec in _DEVICE_SPECS:
+        candidates = (spec.id, spec.category, *spec.aliases)
+        if any(key in candidate or candidate in key for candidate in candidates):
+            matches.append(spec.id)
+    return list(dict.fromkeys(matches))[:limit]
+
+
+def format_unknown_device(raw: str) -> str:
+    suggestions = suggest_device_ids(raw)
+    if suggestions:
+        return f"unknown device: {raw} (try: {', '.join(suggestions)})"
+    return f"unknown device: {raw} (run: hillm devices)"
 
 
 def detect_devices(

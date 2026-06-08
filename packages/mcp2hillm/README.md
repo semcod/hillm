@@ -18,4 +18,6 @@ mcp2hillm stdio
 
 Configure in your MCP client JSON (Cursor, Windsurf, …) pointing at `mcp2hillm`.
 
-**See also:** [Control layer](../README.md)
+`hillm_run_dsl` uses `dispatch()` which auto-loads `.env`. Include `DRY_RUN true` in DSL for safe device commands.
+
+**See also:** [Control layer](../README.md) · [docs/control-layer.md](../../docs/control-layer.md)

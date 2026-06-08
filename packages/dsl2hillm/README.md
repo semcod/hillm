@@ -13,9 +13,12 @@ CQRS bus and JSON Schema DSL for HILLM hardware control.
 
 ```bash
 dsl2hillm HEALTH
-dsl2hillm 'READ DEVICE sensor-temp DRY_RUN true'
-dsl2hillm 'WRITE DEVICE actuator-relay VALUE 1 REGISTER coil:0 DRY_RUN true'
+dsl2hillm 'READ DEVICE sensor-temp'              # dry-run by default
+dsl2hillm 'READ DEVICE sensor-temp' --live     # real hardware
+dsl2hillm 'WRITE DEVICE actuator-relay VALUE 1 REGISTER coil:0'
 ```
+
+Hardware verbs (`READ`, `WRITE`, `ACTUATE`, …) default to dry-run; use `--live` for real transports.
 
 ## Python
 
@@ -26,8 +29,10 @@ result = dispatch("HEALTH")
 result = dispatch({"verb": "READ", "device": "camera-usb", "dry_run": True})
 ```
 
+`dispatch()` auto-loads `.env` from the project root.
+
 ## Event store
 
 Commands append to `.hillm/events/app.hillm.events.jsonl` in the working directory.
 
-**See also:** [Control layer](../README.md) · [hillm README](../../README.md)
+**See also:** [Control layer](../README.md) · [docs/control-layer.md](../../docs/control-layer.md) · [hillm README](../../README.md)

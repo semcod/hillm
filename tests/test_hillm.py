@@ -6,7 +6,7 @@ import pytest
 
 from hillm.compat import agent_backend_aliases, is_hardware_device, tool_registry_entries
 from hillm.controller import actuate_device, connect_device, read_device, write_device
-from hillm.registry import detect_devices, get_device_spec, normalize_device_id
+from hillm.registry import detect_devices, format_unknown_device, get_device_spec, normalize_device_id, suggest_device_ids
 from hillm.validation import ecosystem_status, validate_device_readiness
 
 
@@ -22,6 +22,20 @@ def test_registry_lists_hardware_profiles() -> None:
 def test_normalize_device_aliases() -> None:
     assert normalize_device_id("mic") == "microphone-default"
     assert normalize_device_id("modbus") == "modbus-rtu"
+    assert normalize_device_id("usb") == "usb-hub"
+    assert normalize_device_id("temperature") == "sensor-temp"
+    assert normalize_device_id("camera") == "camera-usb"
+
+
+def test_suggest_device_ids_for_alias() -> None:
+    assert "usb-hub" in suggest_device_ids("usb")
+    assert "sensor-temp" in suggest_device_ids("temperature")
+
+
+def test_format_unknown_device_includes_suggestions() -> None:
+    msg = format_unknown_device("serial")
+    assert "unknown device: serial" in msg
+    assert "sensor-temp" in msg or "serial-tty" in msg
 
 
 def test_dry_run_read_and_write() -> None:
@@ -84,8 +98,17 @@ def test_dsl2hillm_read_device_dispatch() -> None:
 def test_nlp2hillm_maps_camera_prompt() -> None:
     nlp = pytest.importorskip("nlp2hillm.to_dsl")
     line = nlp.to_dsl("capture image from camera")
-    assert "ACTUATE" in line or "READ" in line
-    assert "camera" in line
+    assert line == "ACTUATE DEVICE camera-usb ACTION capture"
+
+
+def test_nlp2hillm_maps_temperature_serial_prompt() -> None:
+    nlp = pytest.importorskip("nlp2hillm.to_dsl")
+    assert nlp.to_dsl("read temperature from serial") == "READ DEVICE sensor-temp REGISTER temperature"
+
+
+def test_nlp2hillm_maps_mouse_over_usb() -> None:
+    nlp = pytest.importorskip("nlp2hillm.to_dsl")
+    assert nlp.to_dsl("read usb port for mouse") == "READ DEVICE mouse-default"
 
 
 def test_uri2hillm_decodes_query() -> None:

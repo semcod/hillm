@@ -1045,7 +1045,7 @@ wheels = [
 
 [[package]]
 name = "hillm"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "pyyaml" },
@@ -1057,29 +1057,16 @@ all-transports = [
     { name = "pymodbus" },
     { name = "pyserial" },
 ]
-control = [
-    { name = "cli2hillm" },
-    { name = "dsl2hillm" },
-    { name = "mcp2hillm" },
-    { name = "nlp2hillm" },
-    { name = "rest2hillm" },
-    { name = "uri2hillm" },
-]
 dev = [
     { name = "build" },
-    { name = "cli2hillm" },
     { name = "costs" },
-    { name = "dsl2hillm" },
     { name = "goal" },
     { name = "httpx" },
-    { name = "mcp2hillm" },
-    { name = "nlp2hillm" },
     { name = "pfix" },
+    { name = "pygments" },
     { name = "pytest" },
-    { name = "rest2hillm" },
     { name = "ruff" },
     { name = "testql" },
-    { name = "uri2hillm" },
 ]
 modbus = [
     { name = "pymodbus" },
@@ -1094,32 +1081,21 @@ serial = [
 [package.metadata]
 requires-dist = [
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.0,<2.0" },
-    { name = "cli2hillm", marker = "extra == 'control'", editable = "packages/cli2hillm" },
-    { name = "cli2hillm", marker = "extra == 'dev'", editable = "packages/cli2hillm" },
     { name = "costs", marker = "extra == 'dev'", specifier = ">=0.1.20" },
-    { name = "dsl2hillm", marker = "extra == 'control'", editable = "packages/dsl2hillm" },
-    { name = "dsl2hillm", marker = "extra == 'dev'", editable = "packages/dsl2hillm" },
     { name = "goal", marker = "extra == 'dev'", specifier = ">=2.1.0" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27,<1.0" },
-    { name = "mcp2hillm", marker = "extra == 'control'", editable = "packages/mcp2hillm" },
-    { name = "mcp2hillm", marker = "extra == 'dev'", editable = "packages/mcp2hillm" },
-    { name = "nlp2hillm", marker = "extra == 'control'", editable = "packages/nlp2hillm" },
-    { name = "nlp2hillm", marker = "extra == 'dev'", editable = "packages/nlp2hillm" },
     { name = "paho-mqtt", marker = "extra == 'all-transports'", specifier = ">=2.0,<3.0" },
     { name = "paho-mqtt", marker = "extra == 'mqtt'", specifier = ">=2.0,<3.0" },
     { name = "pfix", marker = "extra == 'dev'", specifier = ">=0.1.60" },
+    { name = "pygments", marker = "extra == 'dev'", specifier = ">=2.0,<3.0" },
     { name = "pymodbus", marker = "extra == 'all-transports'", specifier = ">=3.6,<4.0" },
     { name = "pymodbus", marker = "extra == 'modbus'", specifier = ">=3.6,<4.0" },
     { name = "pyserial", marker = "extra == 'all-transports'", specifier = ">=3.5,<4.0" },
     { name = "pyserial", marker = "extra == 'serial'", specifier = ">=3.5,<4.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0,<10.0" },
     { name = "pyyaml", specifier = ">=6.0,<7.0" },
-    { name = "rest2hillm", marker = "extra == 'control'", editable = "packages/rest2hillm" },
-    { name = "rest2hillm", marker = "extra == 'dev'", editable = "packages/rest2hillm" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11,<0.16" },
     { name = "testql", marker = "extra == 'dev'", specifier = ">=1.2.0" },
-    { name = "uri2hillm", marker = "extra == 'control'", editable = "packages/uri2hillm" },
-    { name = "uri2hillm", marker = "extra == 'dev'", editable = "packages/uri2hillm" },
 ]
 provides-extras = ["serial", "modbus", "mqtt", "display", "audio", "camera", "usb", "all-transports", "control", "dev"]
 
@@ -1818,11 +1794,22 @@ dependencies = [
     { name = "hillm" },
 ]
 
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+]
+llm = [
+    { name = "litellm" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "dsl2hillm", editable = "packages/dsl2hillm" },
     { name = "hillm", editable = "." },
+    { name = "litellm", marker = "extra == 'llm'", specifier = ">=1.51,<2.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
 ]
+provides-extras = ["llm", "dev"]
 
 [[package]]
 name = "numpy"

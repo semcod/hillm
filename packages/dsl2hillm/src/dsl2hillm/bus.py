@@ -9,6 +9,18 @@ from dsl2hillm.events import EventStore
 from dsl2hillm.result import DslResult
 from dsl2hillm.schema_registry import COMMAND_VERBS, QUERY_VERBS
 
+_ENV_BOOTSTRAPPED = False
+
+
+def _bootstrap_env() -> None:
+    global _ENV_BOOTSTRAPPED
+    if _ENV_BOOTSTRAPPED:
+        return
+    from hillm.project_env import bootstrap_project_env
+
+    bootstrap_project_env()
+    _ENV_BOOTSTRAPPED = True
+
 
 def dispatch(
     command: str | dict[str, Any],
@@ -16,6 +28,7 @@ def dispatch(
     default_file: str | None = None,
     workdir: Path | None = None,
 ) -> DslResult:
+    _bootstrap_env()
     raw_line = ""
     try:
         if isinstance(command, dict):

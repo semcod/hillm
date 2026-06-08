@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from hillm.contracts.device import DeviceResult
-from hillm.registry import DeviceSpec, get_device_spec, normalize_device_id
+from hillm.registry import DeviceSpec, format_unknown_device, get_device_spec, normalize_device_id
 from hillm.transports.base import get_transport
 
 
@@ -25,7 +25,7 @@ class HardwareRequest:
 def _resolve_spec(device_id: str) -> DeviceSpec:
     spec = get_device_spec(device_id)
     if spec is None:
-        raise ValueError(f"unknown device: {device_id}")
+        raise ValueError(format_unknown_device(device_id))
     return spec
 
 

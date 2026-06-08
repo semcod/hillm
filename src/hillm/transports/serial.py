@@ -5,6 +5,25 @@ from __future__ import annotations
 from typing import Any
 
 from hillm.contracts.device import DeviceResult
+from hillm.registry import first_existing_serial_path
+
+
+def _serial_error_hint(exc: Exception, *, address: str = "") -> str:
+    msg = str(exc)
+    if "No such file or directory" in msg or "could not open port" in msg:
+        available = first_existing_serial_path(
+            "/dev/ttyACM0",
+            "/dev/ttyUSB0",
+            "/dev/ttyUSB1",
+            "/dev/ttyS0",
+        )
+        hint = "use DRY_RUN true or export HILLM_DRY_RUN=1"
+        if available:
+            hint = f"try HILLM_<DEVICE_ID>_ADDRESS={available} or {hint}"
+        elif address:
+            hint = f"set HILLM_<DEVICE_ID>_ADDRESS (configured: {address}) or {hint}"
+        return f"{msg} (hint: {hint})"
+    return msg
 
 
 class SerialTransport:
@@ -37,7 +56,7 @@ class SerialTransport:
             port.close()
             return DeviceResult(ok=True, backend=self.transport_id, message=f"serial port openable: {address}")
         except Exception as exc:
-            return DeviceResult(ok=False, backend=self.transport_id, error=str(exc))
+            return DeviceResult(ok=False, backend=self.transport_id, error=_serial_error_hint(exc, address=address))
 
     def disconnect(self, *, address: str, **options: Any) -> DeviceResult:
         return DeviceResult(ok=True, backend=self.transport_id, message=f"serial disconnected: {address}")
@@ -56,7 +75,7 @@ class SerialTransport:
                 data={"raw_bytes": len(data), "register": register},
             )
         except Exception as exc:
-            return DeviceResult(ok=False, backend=self.transport_id, error=str(exc))
+            return DeviceResult(ok=False, backend=self.transport_id, error=_serial_error_hint(exc, address=address))
 
     def write(self, *, address: str, value: Any, register: str = "", **options: Any) -> DeviceResult:
         if not self.available():
@@ -67,7 +86,7 @@ class SerialTransport:
                 written = port.write(payload)
             return DeviceResult(ok=True, backend=self.transport_id, value=written, data={"register": register})
         except Exception as exc:
-            return DeviceResult(ok=False, backend=self.transport_id, error=str(exc))
+            return DeviceResult(ok=False, backend=self.transport_id, error=_serial_error_hint(exc, address=address))
 
     def actuate(self, *, address: str, action: str, **params: Any) -> DeviceResult:
         command = params.get("command", action)

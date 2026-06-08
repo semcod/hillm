@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hillm"
-version = "0.1.1"
+version = "0.1.2"
 description = "Hardware Interface LLM — control displays, cameras, audio, USB, serial, Modbus, and more."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -28,16 +28,13 @@ all-transports = [
     "pymodbus>=3.6,<4.0",
     "paho-mqtt>=2.0,<3.0",
 ]
-control = [
-    "dsl2hillm>=0.1.0",
-    "uri2hillm>=0.1.0",
-    "nlp2hillm>=0.1.0",
-    "cli2hillm>=0.1.0",
-    "mcp2hillm>=0.1.0",
-    "rest2hillm>=0.1.0",
-]
+# Workspace adapters (dsl2hillm, uri2hillm, …) are not on PyPI — use:
+#   uv sync --extra dev          (recommended)
+#   bash packages/install-dev.sh (pip editable fallback)
+control = []
 dev = [
     "build>=1.0,<2.0",
+    "pygments>=2.0,<3.0",
     "pytest>=8.0,<10.0",
     "ruff>=0.11,<0.16",
     "httpx>=0.27,<1.0",
@@ -45,12 +42,6 @@ dev = [
     "costs>=0.1.20",
     "pfix>=0.1.60",
     "testql>=1.2.0",
-    "dsl2hillm>=0.1.0",
-    "uri2hillm>=0.1.0",
-    "nlp2hillm>=0.1.0",
-    "cli2hillm>=0.1.0",
-    "mcp2hillm>=0.1.0",
-    "rest2hillm>=0.1.0",
 ]
 
 [project.scripts]

@@ -223,7 +223,7 @@ git:
     format: '{prefix}{version}'
 strategies:
   python:
-    test: pytest tests/ -v
+    test: uv sync --all-packages --extra dev && uv run pytest tests/ packages/dsl2hillm/tests packages/uri2hillm/tests -v --tb=short
     build: python -m build
     publish: twine upload dist/hillm-{version}*
     publish_enabled: true

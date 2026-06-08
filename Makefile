@@ -53,7 +53,7 @@ _has_uv := $(shell command -v $(UV) >/dev/null 2>&1 && echo 1)
 
 sync:
 ifneq ($(strip $(_has_uv)),)
-	$(UV) sync --extra dev
+	$(UV) sync --all-packages --extra dev
 else
 	$(MAKE) install-dev
 endif
@@ -69,7 +69,7 @@ install-control: venv
 
 install-dev: venv
 ifneq ($(strip $(_has_uv)),)
-	$(UV) sync --extra dev
+	$(UV) sync --all-packages --extra dev
 else
 	$(VENV)/bin/pip install -e ".[dev]"
 	bash packages/install-dev.sh
@@ -78,7 +78,7 @@ endif
 
 install-transports: install-dev
 ifneq ($(strip $(_has_uv)),)
-	$(UV) sync --extra dev --extra all-transports
+	$(UV) sync --all-packages --extra dev --extra all-transports
 else
 	$(VENV)/bin/pip install -e ".[all-transports]"
 endif

@@ -8,18 +8,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `nlp2hillm` OpenRouter LLM backend (`litellm`, `OPENROUTER_API_KEY` + `LLM_MODEL` z `.env`)
+- `nlp2hillm --use-llm` / `--no-llm`; reguły jako fallback
+- `hillm.resolve` — centralne mapowanie NL/alias → device id
+- `registry.suggest_device_ids()` + `format_unknown_device()` — podpowiedzi przy błędach
+- `apply_execution_policy()` — wspólna polityka dry-run/live dla wszystkich adapterów
+- `uri2hillm` / `cli2hillm`: `--live`, `--dry-run`, domyślny dry-run przy wykonaniu (uri2hillm)
+- `hillm.project_env` — auto-load `<project>/.env` in `hillm`, `dsl2hillm`, `nlp2hillm` CLIs and `dispatch()`
+- `dsl2hillm --dry-run` and auto `DRY_RUN` when `HILLM_DRY_RUN=1` in `.env`
+- `nlp2hillm --apply` defaults to dry-run; `--live` opts into real hardware
+- `examples/nlp2hillm/*` — NL mapping and dry-run apply smoke scripts
 - `uri2hillm` DSL shorthand: bare verbs (`HEALTH`), full DSL lines, `decode` / `run` subcommands
 - `uri2hillm.uri.normalize_uri_input()` and `dsl_line_to_uri()` for URI ↔ DSL conversion
 - `uri2hillm` tests in `packages/uri2hillm/tests/test_decode.py`
 - Documentation index: [docs/README.md](docs/README.md), [docs/control-layer.md](docs/control-layer.md), [TODO.md](TODO.md)
 
 ### Changed
-- [README.md](README.md): `uri2hillm` examples, documentation links
-- [docs/configuration.md](docs/configuration.md): `uri2hillm` usage, cross-links
-- [packages/README.md](packages/README.md): control layer quick reference
+- `nlp2hillm.to_dsl` korzysta z `hillm.resolve` (jedno źródło mapowania urządzeń)
+- Dokumentacja: [docs/README.md](docs/README.md), [docs/configuration.md](docs/configuration.md), [docs/control-layer.md](docs/control-layer.md), wszystkie package READMEs, [examples/README.md](examples/README.md)
+- [TODO.md](TODO.md): wnioski z testów + plan refaktoryzacji
+- [README.md](README.md): dry-run policy, architektura (`resolve`, `project_env`), `make test`
 
 ### Fixed
+- `dsl2hillm` / `cli2hillm`: hardware verbs (`READ`, `WRITE`, …) default to dry-run (aligned with `nlp2hillm`, `uri2hillm`)
+- Serial transport errors now hint `DRY_RUN true` / `HILLM_DRY_RUN=1` when port is missing
+- `nlp2hillm`: map `serial`/`usb` to registry IDs (`sensor-temp`, `mouse-default`); `read` wins over `port` keyword
 - `uri2hillm READ` no longer fails with `unsupported URI scheme:` — input is normalized to `hillm://cmd/READ`
+
+## [0.1.2] - 2026-06-08
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update TODO.md
+- Update docs/README.md
+- Update docs/configuration.md
+- Update docs/control-layer.md
+- Update examples/README.md
+- Update packages/README.md
+- Update packages/cli2hillm/README.md
+- Update packages/dsl2hillm/README.md
+- ... and 4 more files
+
+### Test
+- Update tests/test_examples.py
+- Update tests/test_hillm.py
+- Update tests/test_project_env.py
+- Update tests/test_registry_serial.py
+- Update tests/test_resolve.py
+
+### Other
+- Update .gitignore
+- Update .hillm/events/app.hillm.events.jsonl
+- Update Makefile
+- Update examples/control-layer/nlp-to-dsl.sh
+- Update examples/env.example
+- Update examples/nlp2hillm/apply-connect-modbus.sh
+- Update examples/nlp2hillm/apply-env-dry-run.sh
+- Update examples/nlp2hillm/apply-read-dry-run.sh
+- Update examples/nlp2hillm/apply-status-mouse-dry-run.sh
+- Update examples/nlp2hillm/apply-status-mouse-live.sh
+- ... and 31 more files
 
 ## [0.1.1] - 2026-06-08
 

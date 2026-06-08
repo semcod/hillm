@@ -16,6 +16,7 @@ from hillm.controller import (
     write_device,
 )
 from hillm.discovery.scan import scan_host
+from hillm.project_env import bootstrap_project_env
 from hillm.registry import detect_devices
 from hillm.validation import ecosystem_status, validate_device_readiness
 
@@ -150,6 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    bootstrap_project_env()
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     return int(args.func(args))

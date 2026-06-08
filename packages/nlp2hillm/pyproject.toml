@@ -5,10 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nlp2hillm"
 version = "0.1.0"
-description = "Natural language to dsl2hillm adapter"
+description = "Natural language (PL/EN) to dsl2hillm — rules + optional OpenRouter LLM, dry-run by default"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = ["dsl2hillm>=0.1.0", "hillm>=0.1.0"]
+
+[project.optional-dependencies]
+llm = ["litellm>=1.51,<2.0"]
+dev = ["pytest>=8.0"]
 
 [project.scripts]
 nlp2hillm = "nlp2hillm.cli:main"
