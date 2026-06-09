@@ -13,20 +13,54 @@ cp examples/env.example .env   # append HILLM_DRY_RUN=1 if .env already exists
 bash examples/cli/devices.sh
 bash examples/dsl/run-smoke.sh
 bash examples/run-all-dry-run.sh
+make test-examples             # pytest wrapper for all CORE_SCRIPTS
 ```
 
 ## Layout
 
 | Path | Focus |
 |------|-------|
-| [cli/](cli/) | `hillm` CLI — devices, scan, read, write, actuate |
+| [cli/](cli/) | `hillm` CLI — devices, scan, read, write, status |
 | [dsl/](dsl/) | `dsl2hillm` query/command smoke |
 | [control-layer/](control-layer/) | `uri2hillm`, `nlp2hillm`, `cli2hillm`, `rest2hillm` |
 | [nlp2hillm/](nlp2hillm/) | NL → DSL mapping and `--apply` (dry-run default) |
 | [devices/](devices/) | Per-category hardware profiles |
 | [nlp2uri/](nlp2uri/) | `nlp2uri` compile + `uri2hillm` dispatch |
 
-## nlp2hillm
+## cli/
+
+| Script | What it tests |
+|--------|---------------|
+| [devices.sh](cli/devices.sh) | `hillm devices` |
+| [scan.sh](cli/scan.sh) | `hillm scan` |
+| [read-dry-run.sh](cli/read-dry-run.sh) | `hillm read --device sensor-temp --dry-run` |
+| [write-dry-run.sh](cli/write-dry-run.sh) | `hillm write` dry-run |
+| [status-ecosystem.sh](cli/status-ecosystem.sh) | `hillm status --ecosystem` |
+| [status-mouse-dry-run.sh](cli/status-mouse-dry-run.sh) | `hillm status --device mouse-default --dry-run` |
+| [dsl-health.sh](cli/dsl-health.sh) | `dsl2hillm HEALTH` via CLI path |
+
+## dsl/
+
+| Script | What it tests |
+|--------|---------------|
+| [run-smoke.sh](dsl/run-smoke.sh) | Multi-line [smoke.dsl](dsl/smoke.dsl) |
+| [read-sensor-temp.sh](dsl/read-sensor-temp.sh) | `READ DEVICE sensor-temp` dry-run |
+| [devices-usb.sh](dsl/devices-usb.sh) | `DEVICES CATEGORY usb` |
+
+## control-layer/
+
+| Script | What it tests |
+|--------|---------------|
+| [uri-dispatch.sh](control-layer/uri-dispatch.sh) | `uri2hillm` HEALTH + READ URI |
+| [uri-shorthand-read.sh](control-layer/uri-shorthand-read.sh) | DSL shorthand `READ DEVICE sensor-temp` |
+| [uri-decode-sensor.sh](control-layer/uri-decode-sensor.sh) | `uri2hillm decode hillm://…` → DSL |
+| [nlp-to-dsl.sh](control-layer/nlp-to-dsl.sh) | NL temperature + modbus connect |
+| [nlp-mouse-port.sh](control-layer/nlp-mouse-port.sh) | PL mouse port → STATUS dry-run |
+| [dsl-live-policy.sh](control-layer/dsl-live-policy.sh) | `dsl2hillm` dry-run default vs `--live` |
+| [cli-exec.sh](control-layer/cli-exec.sh) | `cli2hillm` passthrough |
+| [rest-health.sh](control-layer/rest-health.sh) | REST server (optional, skip if offline) |
+
+## nlp2hillm/
 
 Natural language → DSL mapping and optional execution. Scripts use `--no-llm` for deterministic CI; live scripts skip gracefully when hardware or `pyserial` is missing.
 
@@ -50,48 +84,51 @@ Natural language → DSL mapping and optional execution. Scripts use `--no-llm` 
 | [apply-read-dry-run.sh](nlp2hillm/apply-read-dry-run.sh) | `--apply` default dry-run for READ |
 | [apply-env-dry-run.sh](nlp2hillm/apply-env-dry-run.sh) | `HILLM_DRY_RUN=1` from load-env |
 | [apply-connect-modbus.sh](nlp2hillm/apply-connect-modbus.sh) | `connect modbus device --apply` |
-| [apply-status-mouse-dry-run.sh](nlp2hillm/apply-status-mouse-dry-run.sh) | Polish mouse port question → dry-run STATUS |
-| [apply-status-mouse-live.sh](nlp2hillm/apply-status-mouse-live.sh) | Live mouse scan under `/dev/input/by-id` (skip if missing) |
-| [apply-verbose-rules.sh](nlp2hillm/apply-verbose-rules.sh) | `-v` prints `# mapped via: rules` |
+| [apply-status-mouse-dry-run.sh](nlp2hillm/apply-status-mouse-dry-run.sh) | Polish mouse port → dry-run STATUS |
+| [apply-status-mouse-live.sh](nlp2hillm/apply-status-mouse-live.sh) | Live mouse under `/dev/input/by-id` |
+| [apply-verbose-rules.sh](nlp2hillm/apply-verbose-rules.sh) | `-v` → `# mapped via: rules` |
 | [apply-temperature-live.sh](nlp2hillm/apply-temperature-live.sh) | Live serial read (skip without port/pyserial) |
-| [llm-openrouter.sh](nlp2hillm/llm-openrouter.sh) | Optional LLM mapping (skip without API key) |
+| [check-serial-env.sh](nlp2hillm/check-serial-env.sh) | Install + port resolution diagnostics |
+| [llm-openrouter.sh](nlp2hillm/llm-openrouter.sh) | Optional LLM (skip without API key) |
+
+## devices/
+
+| Category | Device id | Script |
+|----------|-----------|--------|
+| display / HDMI | `display-primary` | [display/status.sh](devices/display/status.sh) |
+| camera | `camera-usb` | [camera/capture-dry-run.sh](devices/camera/capture-dry-run.sh) |
+| audio | `speaker-default` | [audio/status.sh](devices/audio/status.sh) |
+| USB | `usb-hub` | [usb/list.sh](devices/usb/list.sh) |
+| serial | `serial-ttyacm0` | [serial/read-dry-run.sh](devices/serial/read-dry-run.sh) |
+| Modbus | `modbus-tcp` | [modbus/read-dry-run.sh](devices/modbus/read-dry-run.sh) |
+| input / mouse | `mouse-default` | [input/mouse-status-live.sh](devices/input/mouse-status-live.sh) |
+| sensor / temp | `sensor-temp` | [sensor/temp-read-dry-run.sh](devices/sensor/temp-read-dry-run.sh) |
+| sensor / temp | `sensor-temp` | [sensor/temp-status-live.sh](devices/sensor/temp-status-live.sh) |
+| sensor / temp | `sensor-temp` | [sensor/temp-resolve-address.sh](devices/sensor/temp-resolve-address.sh) |
+
+## nlp2uri/
+
+| Script | What it tests |
+|--------|---------------|
+| [compile-uri.sh](nlp2uri/compile-uri.sh) | `nlp2uri` compile |
+| [run-uri.sh](nlp2uri/run-uri.sh) | `uri2hillm` dispatch |
+
+Requires `pip install nlp2uri[hillm]` (optional in CI).
+
+## Run all
 
 ```bash
-# Quick smoke
-bash examples/nlp2hillm/to-dsl-temperature.sh
-bash examples/nlp2hillm/to-dsl-mouse-port-pl.sh
-bash examples/nlp2hillm/apply-read-dry-run.sh
-bash examples/nlp2hillm/apply-status-mouse-live.sh
-
-# All nlp2hillm examples
-for s in examples/nlp2hillm/*.sh; do bash "$s"; done
+bash examples/run-all-dry-run.sh
+make test-examples
 ```
 
 `nlp2hillm --apply` uses dry-run by default; pass `--live` for real hardware. Live scripts call `unset HILLM_DRY_RUN` because [load-env.sh](load-env.sh) sets `HILLM_DRY_RUN=1`.
 
-Full mapping table and troubleshooting: [packages/nlp2hillm/README.md](../packages/nlp2hillm/README.md).
-
-## Device categories
-
-| Category | Example device id | Script |
-|----------|-------------------|--------|
-| display / HDMI | `display-primary` | [devices/display/status.sh](devices/display/status.sh) |
-| camera | `camera-usb` | [devices/camera/capture-dry-run.sh](devices/camera/capture-dry-run.sh) |
-| audio | `speaker-default` | [devices/audio/status.sh](devices/audio/status.sh) |
-| USB | `usb-hub` | [devices/usb/list.sh](devices/usb/list.sh) |
-| serial / RS232 | `serial-ttyacm0` | [devices/serial/read-dry-run.sh](devices/serial/read-dry-run.sh) |
-| Modbus | `modbus-tcp` | [devices/modbus/read-dry-run.sh](devices/modbus/read-dry-run.sh) |
-
-## REST note
-
-`control-layer/rest-health.sh` requires a running `rest2hillm` server. The aggregate
-`run-all-dry-run.sh` skips it when the server is offline.
-
 ## See also
 
+- [packages/nlp2hillm/README.md](../packages/nlp2hillm/README.md) — NL mapping table + troubleshooting
 - [docs/README.md](../docs/README.md) — documentation index
 - [docs/configuration.md](../docs/configuration.md)
 - [docs/control-layer.md](../docs/control-layer.md)
-- [packages/README.md](../packages/README.md)
 - [CHANGELOG.md](../CHANGELOG.md)
 - [TODO.md](../TODO.md)

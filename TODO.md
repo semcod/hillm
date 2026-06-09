@@ -19,13 +19,19 @@ Wnioski z praktycznych testów (2026-06-08) — co psuło UX i co zostało napra
 - [x] Ujednolicone flagi `--dry-run` / `--live` w `dsl2hillm`, `nlp2hillm`, `uri2hillm`, `cli2hillm`
 - [x] `uri2hillm` domyślny dry-run przy wykonaniu (bez `--live`)
 - [x] `examples/nlp2hillm/*` — smoke testy NL → DSL → apply
-- [x] Testy: resolve, execution policy, suggest devices (50+)
+- [x] `examples/cli/*`, `examples/dsl/*`, `examples/control-layer/*` — rozszerzone smoke skrypty
+- [x] `examples/devices/{input,sensor}/*` — mouse live, sensor-temp resolve + status
+- [x] `registry` serial auto-fallback (`ttyACM0` / `ttyUSB0`)
+- [x] `goal.yaml` — test przez `uv sync` + `uv run pytest` (nie sam `pytest`)
+- [x] Testy: resolve, execution policy, suggest devices, registry serial (70+)
 
 ## Kolejne kroki (plan)
 
 ### Stabilność runtime
 
+- [x] Serial port auto-fallback w `resolve_address()` (`sensor-temp` → pierwszy istniejący `/dev/tty*`)
 - [ ] Auto-fallback dry-run gdy urządzenie `not ready` (port/moduł niedostępny) zamiast błędu
+- [ ] Parser/komenda odczytu temperatury per protokół czujnika (obecnie surowy serial read)
 - [ ] `hillm devices --ready` — filtr gotowych profili w CLI
 - [ ] Walidacja `READ`/`WRITE` z podpowiedzią `suggest_device_ids` już w `dsl2hillm` (przed dispatch)
 
@@ -44,7 +50,9 @@ Wnioski z praktycznych testów (2026-06-08) — co psuło UX i co zostało napra
 
 ### DevEx
 
+- [x] Rozszerzone `examples/*/*` + podlinkowanie w [README.md](README.md) i [examples/README.md](examples/README.md)
 - [ ] `examples/env.example` merge hint w README (dodać `HILLM_DRY_RUN=1` do istniejącego `.env`)
+- [ ] Ujednolicić `venv` vs `.venv` w dokumentacji (`uv sync --active`)
 - [ ] `make lint` / ruff cleanup
 - [ ] Publish `hillm` + `*2hillm` na PyPI
 

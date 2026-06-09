@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `examples/cli/*` — status ecosystem, mouse dry-run, dsl health
+- `examples/dsl/*` — read sensor-temp, devices usb
+- `examples/control-layer/*` — uri shorthand/decode, nlp mouse port, dsl live policy
+- `examples/devices/input/*` — mouse status live (`/dev/input/by-id`)
+- `examples/devices/sensor/*` — temp read dry-run, status live, serial address resolve
+- `examples/nlp2hillm/check-serial-env.sh` — install + port diagnostics
+- `registry.first_existing_serial_path()` — auto-fallback `/dev/ttyACM0` when `/dev/ttyUSB0` missing
+- `sensor-temp` `detect_paths` + serial port auto-resolve in `resolve_address()`
+- `nlp2hillm -v` — resolved device address + package paths on stderr
+- `pygments` in `[dev]`; `goal.yaml` test via `uv sync --all-packages --extra dev && uv run pytest`
 - `nlp2hillm` OpenRouter LLM backend (`litellm`, `OPENROUTER_API_KEY` + `LLM_MODEL` z `.env`)
 - `nlp2hillm --use-llm` / `--no-llm`; reguły jako fallback
 - `hillm.resolve` — centralne mapowanie NL/alias → device id
@@ -31,9 +41,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `dsl2hillm` / `cli2hillm`: hardware verbs (`READ`, `WRITE`, …) default to dry-run (aligned with `nlp2hillm`, `uri2hillm`)
-- Serial transport errors now hint `DRY_RUN true` / `HILLM_DRY_RUN=1` when port is missing
+- Serial transport errors hint available port (`HILLM_<DEVICE>_ADDRESS=/dev/ttyACM0`) when default missing
+- `sensor-temp` live read uses first existing serial port (fixes `/dev/ttyUSB0` on hosts with only `ttyACM0`)
+- `goal -a` test failures from broken `.venv` (partial pytest/pygments installs) — use full `uv sync` in test strategy
 - `nlp2hillm`: map `serial`/`usb` to registry IDs (`sensor-temp`, `mouse-default`); `read` wins over `port` keyword
 - `uri2hillm READ` no longer fails with `unsupported URI scheme:` — input is normalized to `hillm://cmd/READ`
+
+## [0.1.3] - 2026-06-09
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update TODO.md
+- Update examples/README.md
+
+### Test
+- Update tests/test_examples.py
+
+### Other
+- Update .hillm/events/app.hillm.events.jsonl
+- Update examples/cli/dsl-health.sh
+- Update examples/cli/status-ecosystem.sh
+- Update examples/cli/status-mouse-dry-run.sh
+- Update examples/control-layer/dsl-live-policy.sh
+- Update examples/control-layer/nlp-mouse-port.sh
+- Update examples/control-layer/uri-decode-sensor.sh
+- Update examples/control-layer/uri-shorthand-read.sh
+- Update examples/devices/input/mouse-status-live.sh
+- Update examples/devices/sensor/temp-read-dry-run.sh
+- ... and 5 more files
 
 ## [0.1.2] - 2026-06-08
 

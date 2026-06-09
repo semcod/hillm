@@ -3,13 +3,13 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.60-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.3-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.72-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.3h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $0.6016 (1 commits)
-- 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $0.7176 (2 commits)
+- 👤 **Human dev:** ~$228 (2.3h @ $100/h, 30min dedup)
 
-Generated on 2026-06-08 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+Generated on 2026-06-09 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
@@ -112,19 +112,28 @@ packages/
 
 ## Examples
 
+Runnable smoke scripts in [examples/](examples/) — full index: [examples/README.md](examples/README.md).
+
 ```bash
 bash packages/install-dev.sh
 cp examples/env.example .env    # optional
 bash examples/run-all-dry-run.sh
+make test-examples
 ```
 
-See [examples/README.md](examples/README.md) for per-device and control-layer scripts.
+| Category | Scripts |
+|----------|---------|
+| **CLI** | [devices](examples/cli/devices.sh) · [scan](examples/cli/scan.sh) · [read dry-run](examples/cli/read-dry-run.sh) · [status ecosystem](examples/cli/status-ecosystem.sh) · [status mouse](examples/cli/status-mouse-dry-run.sh) |
+| **DSL** | [smoke](examples/dsl/run-smoke.sh) · [read sensor-temp](examples/dsl/read-sensor-temp.sh) · [devices usb](examples/dsl/devices-usb.sh) |
+| **NLP** | [temperature](examples/nlp2hillm/to-dsl-temperature.sh) · [mouse port PL](examples/nlp2hillm/to-dsl-mouse-port-pl.sh) · [apply live temp](examples/nlp2hillm/apply-temperature-live.sh) · [check serial](examples/nlp2hillm/check-serial-env.sh) |
+| **URI** | [dispatch](examples/control-layer/uri-dispatch.sh) · [shorthand read](examples/control-layer/uri-shorthand-read.sh) · [decode](examples/control-layer/uri-decode-sensor.sh) |
+| **Devices** | [display](examples/devices/display/status.sh) · [camera](examples/devices/camera/capture-dry-run.sh) · [mouse live](examples/devices/input/mouse-status-live.sh) · [sensor temp](examples/devices/sensor/temp-read-dry-run.sh) · [serial resolve](examples/devices/sensor/temp-resolve-address.sh) |
 
 ## Tests
 
 ```bash
-make test              # core + control layer (53+ tests)
-make test-examples     # examples/**/*.sh smoke
+make test              # core + control layer (70+ tests)
+make test-examples     # examples/**/*.sh smoke (40+ scripts)
 make examples          # bash examples/run-all-dry-run.sh
 ```
 
