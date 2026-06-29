@@ -47,6 +47,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `nlp2hillm`: map `serial`/`usb` to registry IDs (`sensor-temp`, `mouse-default`); `read` wins over `port` keyword
 - `uri2hillm READ` no longer fails with `unsupported URI scheme:` — input is normalized to `hillm://cmd/READ`
 
+## [0.1.5] - 2026-06-29
+
+### Docs
+- Update README.md
+
+### Other
+- Update .hillm/events/app.hillm.events.jsonl
+
 ## [0.1.4] - 2026-06-29
 
 ### Docs
