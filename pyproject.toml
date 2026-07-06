@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hillm"
-version = "0.1.5"
+version = "0.1.6"
 description = "Hardware Interface LLM — control displays, cameras, audio, USB, serial, Modbus, and more."
 readme = "README.md"
 requires-python = ">=3.11"
