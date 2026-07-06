@@ -5,20 +5,24 @@ root="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck disable=SC1091
 source "$root/examples/load-env.sh"
 
-if [[ -x "$root/venv/bin/nlp2hillm" ]]; then
-  NLP2HILLM="$root/venv/bin/nlp2hillm"
-elif [[ -x "$root/.venv/bin/nlp2hillm" ]]; then
+# Prefer .venv (canonical project env); legacy venv/ may be stale.
+if [[ -x "$root/.venv/bin/nlp2hillm" ]]; then
   NLP2HILLM="$root/.venv/bin/nlp2hillm"
+elif [[ -x "$root/venv/bin/nlp2hillm" ]]; then
+  NLP2HILLM="$root/venv/bin/nlp2hillm"
 else
   NLP2HILLM="$(command -v nlp2hillm)"
 fi
+# Use the interpreter from the same env as the CLI so imports match.
+PY="$(dirname "$NLP2HILLM")/python3"
+[[ -x "$PY" ]] || PY=python3
 
 echo "=== nlp2hillm ==="
 echo "$NLP2HILLM"
 ls -la "$NLP2HILLM"
 
 "$NLP2HILLM" --help >/dev/null
-python3 -c "
+"$PY" -c "
 import hillm
 from importlib.util import find_spec
 from hillm.registry import get_device_spec, first_existing_serial_path

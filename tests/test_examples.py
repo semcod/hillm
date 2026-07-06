@@ -42,8 +42,6 @@ CORE_SCRIPTS = [
     "nlp2hillm/apply-status-mouse-dry-run.sh",
     "nlp2hillm/apply-status-mouse-live.sh",
     "nlp2hillm/apply-verbose-rules.sh",
-    "nlp2hillm/apply-temperature-live.sh",
-    "nlp2hillm/check-serial-env.sh",
     "devices/display/status.sh",
     "devices/camera/capture-dry-run.sh",
     "devices/audio/status.sh",
@@ -52,8 +50,16 @@ CORE_SCRIPTS = [
     "devices/modbus/read-dry-run.sh",
     "devices/input/mouse-status-live.sh",
     "devices/sensor/temp-read-dry-run.sh",
-    "devices/sensor/temp-status-live.sh",
     "devices/sensor/temp-resolve-address.sh",
+]
+
+# Scripts that perform a live serial read and therefore need the optional
+# `serial` extra (pyserial). Skipped when it isn't installed so the suite stays
+# green on hosts without the serial transport stack.
+SERIAL_SCRIPTS = [
+    "nlp2hillm/apply-temperature-live.sh",
+    "nlp2hillm/check-serial-env.sh",
+    "devices/sensor/temp-status-live.sh",
 ]
 
 NLP2URI_SCRIPTS = [
@@ -81,6 +87,13 @@ def test_example_script(rel: str) -> None:
     assert proc.returncode == 0, f"{rel} failed:\n{proc.stdout}\n{proc.stderr}"
 
 
+@pytest.mark.parametrize("rel", SERIAL_SCRIPTS)
+def test_serial_example_script(rel: str) -> None:
+    pytest.importorskip("serial", reason="serial extra (pyserial) not installed")
+    proc = _run_script(rel)
+    assert proc.returncode == 0, f"{rel} failed:\n{proc.stdout}\n{proc.stderr}"
+
+
 @pytest.mark.parametrize("rel", NLP2URI_SCRIPTS)
 def test_nlp2uri_example_script(rel: str) -> None:
     pytest.importorskip("nlp2uri")
@@ -90,6 +103,8 @@ def test_nlp2uri_example_script(rel: str) -> None:
 
 
 def test_run_all_dry_run() -> None:
+    # run-all-dry-run.sh includes live serial scripts; needs the serial extra.
+    pytest.importorskip("serial", reason="serial extra (pyserial) not installed")
     proc = subprocess.run(
         ["bash", str(EXAMPLES / "run-all-dry-run.sh")],
         cwd=ROOT,
